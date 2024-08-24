@@ -123,43 +123,6 @@ export default {
       } = env;
       const url = new URL(request.url);
       const originHostname = url.hostname;
-      if (
-        !PROXY_HOSTNAME ||
-        (PATHNAME_REGEX && !new RegExp(PATHNAME_REGEX).test(url.pathname)) ||
-        (UA_WHITELIST_REGEX &&
-          !new RegExp(UA_WHITELIST_REGEX).test(
-            request.headers.get("user-agent").toLowerCase()
-          )) ||
-        (UA_BLACKLIST_REGEX &&
-          new RegExp(UA_BLACKLIST_REGEX).test(
-            request.headers.get("user-agent").toLowerCase()
-          )) ||
-        (IP_WHITELIST_REGEX &&
-          !new RegExp(IP_WHITELIST_REGEX).test(
-            request.headers.get("cf-connecting-ip")
-          )) ||
-        (IP_BLACKLIST_REGEX &&
-          new RegExp(IP_BLACKLIST_REGEX).test(
-            request.headers.get("cf-connecting-ip")
-          )) ||
-        (REGION_WHITELIST_REGEX &&
-          !new RegExp(REGION_WHITELIST_REGEX).test(
-            request.headers.get("cf-ipcountry")
-          )) ||
-        (REGION_BLACKLIST_REGEX &&
-          new RegExp(REGION_BLACKLIST_REGEX).test(
-            request.headers.get("cf-ipcountry")
-          ))
-      ) {
-        logError(request, "Invalid");
-        return URL302
-          ? Response.redirect(URL302, 302)
-          : new Response(await nginx(), {
-              headers: {
-                "Content-Type": "text/html; charset=utf-8",
-              },
-            });
-      }
       url.host = PROXY_HOSTNAME;
       url.protocol = PROXY_PROTOCOL;
       const newRequest = createNewRequest(
